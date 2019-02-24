@@ -1,0 +1,22 @@
+---
+
+dist: "xenial"
+language: "minimal"
+
+service:
+  - "docker"
+
+script:
+  - "make test-all"
+  - "make lint-all -j 2"
+
+after_success:
+  - "docker pull krostar/ci:publish-go-cover"
+  - >-
+      make docker-publish-go-cover
+      DOCKER_RUN_ARGS="
+      --report ./build/cover/coverage.out
+      --token $CODACY_TOKEN
+      --commit $TRAVIS_COMMIT"
+
+...
