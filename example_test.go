@@ -14,7 +14,7 @@ func myMiddleware(next http.Handler) http.HandlerFunc {
 
 		if httpinfo.IsUsed(r) {
 			fmt.Printf("status      = %d\n", httpinfo.Status(r))
-			fmt.Printf("bytes wrote = %d\n", httpinfo.BytesWrote(r))
+			fmt.Printf("bytes wrote = %d\n", httpinfo.ContentLength(r))
 		}
 	}
 }

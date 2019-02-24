@@ -53,18 +53,18 @@ func TestExecutionTime(t *testing.T) {
 	})).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/", nil))
 }
 
-func TestBytesWrote(t *testing.T) {
+func TestContentLength(t *testing.T) {
 	Record()(http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
 		var hello = []byte("hello")
 		http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) {
 			rw.Write(hello) // nolint: errcheck, gosec
 		}).ServeHTTP(rw, r)
-		assert.Equal(t, len(hello), BytesWrote(r))
+		assert.Equal(t, len(hello), ContentLength(r))
 	})).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/", nil))
 }
 
-func TestRouteUsed(t *testing.T) {
+func TestRoute(t *testing.T) {
 	Record()(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
-		assert.Equal(t, r.Method+" "+r.URL.Path, RouteUsed(r))
+		assert.Equal(t, r.Method+" "+r.URL.Path, Route(r))
 	})).ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodGet, "/", nil))
 }

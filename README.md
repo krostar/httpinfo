@@ -67,10 +67,10 @@ func myMiddleware (rw http.ResponseWriter, r *http.Request ) {
 
     // within any request handler, you're now able to get response info
     var (
-        status     = httpinfo.Status(r)
-        route      = httpinfo.Route(r)
-        bytesWrote = httpinfo.BytesWrote(r)
-        latency    = httpinfo.ExecutionTime(r)
+        status        = httpinfo.Status(r)
+        route         = httpinfo.Route(r)
+        contentLength = httpinfo.ContentLength(r)
+        latency       = httpinfo.ExecutionTime(r)
     )
     // ...
 }

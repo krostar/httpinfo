@@ -36,11 +36,11 @@ func ExecutionTime(r *http.Request) time.Duration {
 	return 0
 }
 
-// BytesWrote returns the response content length. The value
+// ContentLength returns the response content length. The value
 // is likely to change throughout the execution of a request
 // (each time ResponseWriter.Write is called). It is advised
 // to only use this function after calling the next handler.
-func BytesWrote(r *http.Request) int {
+func ContentLength(r *http.Request) int {
 	if rr := fromRequest(r); rr != nil {
 		defer rr.mu.Unlock()
 		rr.mu.Lock()
@@ -49,10 +49,10 @@ func BytesWrote(r *http.Request) int {
 	return 0
 }
 
-// RouteUsed returns the route that matches the request. The value is
+// Route returns the route that matches the request. The value is
 // returned thanks to the WithRouteGetterFunc option. It is advised
 // to only use this function after calling the next handler.
-func RouteUsed(r *http.Request) string {
+func Route(r *http.Request) string {
 	if rr := fromRequest(r); rr != nil {
 		defer rr.mu.Unlock()
 		rr.mu.Lock()
