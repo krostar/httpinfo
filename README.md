@@ -54,23 +54,26 @@ For all these reasons I decided to write my last wrapper of `http.ResponseWriter
 ## Usage / examples
 
 ```go
-// during the router setup
+// during the router setup...
 router.Use(
     httpinfo.Record(),
     // other middlewares goes after, even the panic recover one
+    myMiddleware,
 )
 
-// within any request handler, you're now able to
-next.ServeHTTP(w, r)
+func myMiddleware (rw http.ResponseWriter, r *http.Request ) {
+    // call the next handler
+    next.ServeHTTP(w, r)
 
-var (
-    ctx = r.Context()
-
-    status     = httpinfo.Status(ctx)
-    route      = httpinfo.Route(ctx)
-    bytesWrote = httpinfo.BytesWrote(ctx)
-    latency    = httpinfo.ExecutionTime(ctx)
-)
+    // within any request handler, you're now able to get response info
+    var (
+        status     = httpinfo.Status(r)
+        route      = httpinfo.Route(r)
+        bytesWrote = httpinfo.BytesWrote(r)
+        latency    = httpinfo.ExecutionTime(r)
+    )
+    // ...
+}
 ```
 
 More doc and examples in the httpinfo's [godoc](https://godoc.org/github.com/krostar/httpinfo)
