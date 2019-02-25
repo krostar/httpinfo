@@ -12,7 +12,7 @@ You don't need to write `http.ResponseWriter` wrappers anymore.
 
 ## Motivation
 
-It has become a common thing to write a wrapper of `http.ResponseWriter` because at some point it was a need to get a request response information like the response status. In a complete request flow, a lot of middlewares require something (some requires the status, the number of bytes wrote, the route pattern used, ...). Moreover, some middleware are also interacting with the response (like a panic or a timeout handler that sets the response status) causing unwanted behaviour (like a net/http log saying the response status should only we wrote one time). The naive approach of wrapping the `http.ResponseWriter` introduce some flaws and/or does not help to fix the already existing ones.
+It has become a common thing to write a wrapper of `http.ResponseWriter` because at some point it was a need to get request response information like the response status. In a complete request flow, a lot of middlewares required something (some requires the status, the number of bytes wrote, the route pattern used, ...). Moreover, some middlewares are also interacting with the response (like a panic or a timeout handler that sets the response status) causing unwanted behaviour (like a net/http log saying the response status should only we wrote one time). The naive approach of wrapping the `http.ResponseWriter` introduce some flaws and/or does not help to fix the already existing ones.
 
 For example here:
 
@@ -30,7 +30,7 @@ func (rww *responseWriterWrapper) WriteHeader(status int) {
 // ...
 ```
 
-If the original `http.ResponseWriter` was implementing `http.Flusher`, it is not the case anymore. We can add the `Flush` method:
+If the original `http.ResponseWriter` was implementing `http.Flusher`, it is not the case anymore. To fix that we can add the `Flush` method:
 
 ```go
 func (rww *responseWriterWrapper) Flush() {
@@ -40,7 +40,7 @@ func (rww *responseWriterWrapper) Flush() {
 }
 ```
 
-but now our wrapper **always** implements the `http.Flusher` interface which can cause unwanted behaviour.
+but now our wrapper **always** implements the `http.Flusher` interface which can also cause unwanted behaviour.
 
 For all these reasons I decided to write my last wrapper of `http.ResponseWriter` and it has the following features:
 
@@ -61,18 +61,20 @@ router.Use(
     myMiddleware,
 )
 
-func myMiddleware (rw http.ResponseWriter, r *http.Request ) {
-    // call the next handler
-    next.ServeHTTP(w, r)
+func myMiddleware(next http.Handler) http.Handler {
+    return func (rw http.ResponseWriter, r *http.Request ) {
+        // call the next handler
+        next.ServeHTTP(rw, r)
 
-    // within any request handler, you're now able to get response info
-    var (
-        status        = httpinfo.Status(r)
-        route         = httpinfo.Route(r)
-        contentLength = httpinfo.ContentLength(r)
-        latency       = httpinfo.ExecutionTime(r)
-    )
-    // ...
+        // within any request handler, you're now able to get response info
+        var (
+            status        = httpinfo.Status(r)
+            route         = httpinfo.Route(r)
+            contentLength = httpinfo.ContentLength(r)
+            latency       = httpinfo.ExecutionTime(r)
+        )
+        // ...
+    }
 }
 ```
 
