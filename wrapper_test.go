@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// nolint: funlen
 func TestResponseRecorder_wrapped(t *testing.T) {
 	t.Run("w", func(t *testing.T) {
 		t.Parallel()

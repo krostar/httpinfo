@@ -32,10 +32,11 @@ func Example() {
 	)
 	defer srv.Close()
 
-	_, err := http.DefaultClient.Get(srv.URL)
+	resp, err := http.DefaultClient.Get(srv.URL)
 	if err != nil {
 		panic(err)
 	}
+	defer resp.Body.Close() // nolint: errcheck, gosec
 
 	// Output:
 	// status      = 208

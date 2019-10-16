@@ -1,3 +1,5 @@
+// Package httpinfo is a http middleware that wraps and adds data (
+// as response status, response time, ...) and help the retrieval of these information.
 package httpinfo
 
 import (
